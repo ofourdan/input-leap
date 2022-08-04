@@ -24,6 +24,12 @@ list(REMOVE_ITEM sources ${remove_platform})
 file(GLOB_RECURSE global_headers "../../test/global/*.h")
 file(GLOB_RECURSE global_sources "../../test/global/*.cpp")
 
+if (NOT HAVE_GLIB2)
+    # Remove anything Glib related
+    list(FILTER global_headers EXCLUDE REGEX ".*Glib.*")
+    list(FILTER global_sources EXCLUDE REGEX ".*Glib.*")
+endif()
+
 list(APPEND headers ${global_headers})
 list(APPEND sources ${global_sources})
 

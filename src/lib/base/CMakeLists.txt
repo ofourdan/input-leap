@@ -21,6 +21,12 @@ if(INPUTLEAP_ADD_HEADERS)
     list(APPEND sources ${headers})
 endif()
 
+if (NOT HAVE_GLIB2)
+    # Remove anything Glib related
+    list(FILTER headers EXCLUDE REGEX ".*Glib.*")
+    list(FILTER sources EXCLUDE REGEX ".*Glib.*")
+endif()
+
 add_library(base STATIC ${sources})
 
 if (UNIX)

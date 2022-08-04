@@ -55,6 +55,18 @@ list(APPEND headers ${mswin_headers} ${carbon_headers} ${xwin_headers})
 file(GLOB_RECURSE global_headers "../../test/global/*.h")
 file(GLOB_RECURSE global_sources "../../test/global/*.cpp")
 
+if (HAVE_GLIB2)
+    file(GLOB glibtests_headers "glib/Glib*.h")
+    file(GLOB glibtests_sources "glib/Glib*.cpp")
+
+    list(APPEND global_headers ${glibtests_headers})
+    list(APPEND global_sources ${glibtests_sources})
+else()
+    # Remove anything Glib related
+    list(FILTER global_headers EXCLUDE REGEX ".*Glib.*")
+    list(FILTER global_sources EXCLUDE REGEX ".*Glib.*")
+endif()
+
 list(APPEND headers ${global_headers})
 list(APPEND sources ${global_sources})
 

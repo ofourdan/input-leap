@@ -151,6 +151,13 @@ if (UNIX)
         if(INPUTLEAP_BUILD_GUI AND NOT HAVE_DNSSD)
             message (FATAL_ERROR "Missing header: dns_sd.h")
         endif()
+
+        pkg_check_modules (GLIB2 glib-2.0 gio-2.0)
+        if (GLIB2_FOUND)
+            set (HAVE_GLIB2 1)
+            list (APPEND libs ${GLIB2_LDFLAGS} ${GLIB2_LIBRARIES})
+            include_directories(${GLIB2_INCLUDE_DIRS})
+        endif()
     endif()
 
     # For config.h, set some static values; it may be a good idea to make

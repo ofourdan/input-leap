@@ -25,6 +25,14 @@ endif()
 if (BUILD_XWINDOWS)
     file(GLOB xwin_headers "XWindows*.h")
     file(GLOB xwin_sources "XWindows*.cpp")
+
+    if (HAVE_GLIB2)
+        file(GLOB glib_headers "Glib*.h")
+        file(GLOB glib_sources "Glib*.cpp")
+
+        list(APPEND xwin_headers ${glib_headers})
+        list(APPEND xwin_sources ${glib_sources})
+    endif()
 endif()
 
 list(APPEND sources ${mswin_sources} ${carbon_sources} ${xwin_sources})

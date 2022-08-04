@@ -27,3 +27,6 @@
 
 /* Define to the type of arg 5 for `select`. */
 #cmakedefine SELECT_TYPE_ARG5 ${SELECT_TYPE_ARG5}
+
+/* Define this if the glib-2.0 is available. */
+#cmakedefine HAVE_GLIB2 ${HAVE_GLIB2}
