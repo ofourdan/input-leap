@@ -49,4 +49,6 @@ public:
     bool m_enableCrypto;
     inputleap::fs::path m_profileDirectory;
     inputleap::fs::path m_pluginDirectory;
+    bool m_useX11;
+    bool m_useEi;
 };
