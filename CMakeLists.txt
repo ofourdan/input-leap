@@ -27,7 +27,7 @@ option(INPUTLEAP_BUILD_LIBEI "Build with libei/libeis support" ON)
 
 if (${CMAKE_VERSION} VERSION_LESS "3.12.0")
     message("Disabling libei support on old cmake")
-    set(INPUTLEAP_BUILD_LIBEI OFF CACHE BOOL)
+    set(INPUTLEAP_BUILD_LIBEI OFF CACHE BOOL "libei support disabled" FORCE)
 endif()
 
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
