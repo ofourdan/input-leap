@@ -99,6 +99,7 @@ protected:
 
 private:
     void sendEvent(Event::Type, void* = nullptr);
+    ButtonID mapButtonFromEvdev(struct ei_event *event) const;
     void onKeyEvent(struct ei_event *event);
     void onButtonEvent(struct ei_event *event);
     void onMotionEvent(struct ei_event *event);

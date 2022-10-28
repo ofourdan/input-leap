@@ -465,6 +465,30 @@ EiScreen::sendEvent(Event::Type type, void* data)
     m_events->addEvent(Event(type, getEventTarget(), data));
 }
 
+ButtonID
+EiScreen::mapButtonFromEvdev(struct ei_event *event) const
+{
+    uint32_t button = ei_event_pointer_get_button(event);
+
+    switch (button)
+      {
+        case 0x110:
+            return kButtonLeft;
+        case 0x111:
+            return kButtonRight;
+        case 0x112:
+            return kButtonMiddle;
+        case 0x113:
+            return kButtonExtra0;
+        case 0x114:
+            return kButtonExtra1;
+        default:
+            return kButtonNone;
+      }
+
+    return kButtonNone;
+}
+
 void
 EiScreen::onKeyEvent(struct ei_event *event)
 {
@@ -477,6 +501,24 @@ EiScreen::onButtonEvent(struct ei_event *event)
 {
     LOG((CLOG_DEBUG "onButtonEvent"));
     assert(m_isPrimary);
+
+    ButtonID button = mapButtonFromEvdev(event);
+    bool pressed = ei_event_pointer_get_button_is_press(event);
+    KeyModifierMask mask = 0; // FIXME
+
+    LOG((CLOG_DEBUG1 "event: Button %s button=%d", pressed ? "press" : "release", button));
+
+    if (button == kButtonNone) {
+        LOG((CLOG_DEBUG "onButtonEvent: button not recognized"));
+        return;
+    }
+
+    if (pressed)
+        sendEvent(m_events->forIPrimaryScreen().buttonDown(),
+                  ButtonInfo::alloc(button, mask));
+    else
+        sendEvent(m_events->forIPrimaryScreen().buttonUp(),
+                  ButtonInfo::alloc(button, mask));
 }
 
 void
