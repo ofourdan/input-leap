@@ -290,6 +290,12 @@ EiScreen::enter()
         if (m_ei_abs)
             ei_device_start_emulating(m_ei_abs);
     }
+#if HAVE_LIBPORTAL_INPUTCAPTURE
+    else {
+        LOG((CLOG_DEBUG "Releasing input capture"));
+        m_PortalInputCapture->release(m_xCursor, m_yCursor);
+    }
+#endif
 }
 
 bool
