@@ -94,7 +94,7 @@ EiScreen::EiScreen(bool isPrimary, IEventQueue* events, bool usePortal) :
             throw XArch("Failed to init ei context");
         }
     }
-
+    LOG((CLOG_DEBUG "%s: (m_xCursor,m_yCursor)=(%i,%i)", __func__, m_xCursor, m_yCursor));
     // install the platform event queue
     m_events->adoptBuffer(new EiEventQueueBuffer(this, m_ei, m_events));
 }
@@ -145,6 +145,7 @@ EiScreen::getShape(int32_t& x, int32_t& y, int32_t& w, int32_t& h) const
 void
 EiScreen::getCursorPos(int32_t& x, int32_t& y) const
 {
+    LOG((CLOG_DEBUG "%s: (m_xCursor,m_yCursor)=(%i,%i)", __func__, m_xCursor, m_yCursor));
     // We cannot get the cursor position on EI, so we
     // always return the center of the screen
     x = m_x + m_w/2;
@@ -213,7 +214,7 @@ void
 EiScreen::fakeMouseButton(ButtonID button, bool press)
 {
     uint32_t code;
-
+    LOG((CLOG_DEBUG1 "fakeMouseButton: Button %s button=%d", press ? "press" : "release", button));
     if (!m_ei_pointer)
         return;
 
@@ -260,6 +261,7 @@ EiScreen::fakeMouseWheel(int32_t xDelta, int32_t yDelta) const
 void
 EiScreen::fakeKey(uint32_t keycode, bool is_down) const
 {
+    LOG((CLOG_DEBUG1 "fakeKey: keycode=%d %s", keycode, is_down ? "press" : "release"));
     ei_device_keyboard_key(m_ei_keyboard, keycode, is_down);
     ei_device_frame(m_ei_keyboard, ei_now(m_ei));
 }
@@ -383,7 +385,9 @@ EiScreen::updateShape()
     for (auto it = m_ei_devices.begin(); it != m_ei_devices.end(); it++) {
         auto idx = 0;
         struct ei_region *r;
+        LOG((CLOG_NOTE "device %s", ei_device_get_name(*it)));
         while ((r = ei_device_get_region(*it, idx++)) != NULL) {
+            LOG((CLOG_NOTE "region"));
             m_x = std::min(ei_region_get_x(r), m_x);
             m_y = std::min(ei_region_get_y(r), m_y);
             m_w = std::max(ei_region_get_x(r) + ei_region_get_width(r), m_w);
@@ -544,10 +548,10 @@ EiScreen::onMotionEvent(struct ei_event *event)
 
     double dx = ei_event_pointer_get_dx(event),
            dy = ei_event_pointer_get_dy(event);
-
+    LOG((CLOG_DEBUG "onMotionEvent (dx,dy)=(%.2f,%.2f) + (m_xCursor,m_yCursor)=(%i,%i)", dx, dy, m_xCursor, m_yCursor));
     m_xCursor += dx;
     m_yCursor += dy;
-
+    LOG((CLOG_DEBUG "onMotionEvent (m_xCursor,m_yCursor) = (%i,%i)", m_xCursor, m_yCursor));
     // motion on primary screen
     if (m_isOnScreen) {
          sendEvent(m_events->forIPrimaryScreen().motionOnPrimary(),

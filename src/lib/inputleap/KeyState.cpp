@@ -840,7 +840,7 @@ void KeyState::fakeKeys(const Keystrokes& keys, std::uint32_t count)
     }
 
     // generate key events
-    LOG((CLOG_DEBUG1 "keystrokes:"));
+    LOG((CLOG_DEBUG1 "keystrokes: %i", count));
     for (Keystrokes::const_iterator k = keys.begin(); k != keys.end(); ) {
         if (k->m_type == Keystroke::kButton && k->m_data.m_button.m_repeat) {
             // repeat from here up to but not including the next key
@@ -851,6 +851,7 @@ void KeyState::fakeKeys(const Keystrokes& keys, std::uint32_t count)
                 for (k = start; k != keys.end() &&
                                 k->m_type == Keystroke::kButton &&
                                 k->m_data.m_button.m_repeat; ++k) {
+                    LOG((CLOG_DEBUG1 "fakeKeys: sending repeating key %d", k->m_data.m_button.m_button));
                     fakeKey(*k);
                 }
             }
@@ -860,6 +861,7 @@ void KeyState::fakeKeys(const Keystrokes& keys, std::uint32_t count)
         }
         else {
             // send event
+            LOG((CLOG_DEBUG1 "fakeKeys: sending key %d", k->m_data.m_button.m_button));
             fakeKey(*k);
 
             // next key

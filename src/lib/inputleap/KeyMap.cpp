@@ -287,6 +287,7 @@ const KeyMap::KeyItem* KeyMap::mapKey(Keystrokes& keys, KeyID id, std::int32_t g
     case kKeyScrollLock:
         item = mapModifierKey(keys, id, group, activeModifiers,
                                 currentState, desiredMask, isAutoRepeat);
+        LOG((CLOG_DEBUG1 "mapModifierKey()"));
         break;
 
     case kKeySetModifiers:
@@ -295,6 +296,7 @@ const KeyMap::KeyItem* KeyMap::mapKey(Keystrokes& keys, KeyID id, std::int32_t g
             LOG((CLOG_DEBUG1 "unable to set modifiers %04x", desiredMask));
             return nullptr;
         }
+        LOG((CLOG_DEBUG1 "kKeySetModifiers %03x, new state %04x", m_modifierKeyItem.m_button, currentState));
         return &m_modifierKeyItem;
 
     case kKeyClearModifiers:
@@ -304,16 +306,19 @@ const KeyMap::KeyItem* KeyMap::mapKey(Keystrokes& keys, KeyID id, std::int32_t g
             LOG((CLOG_DEBUG1 "unable to clear modifiers %04x", desiredMask));
             return nullptr;
         }
+        LOG((CLOG_DEBUG1 "kKeyClearModifiers %03x, new state %04x", m_modifierKeyItem.m_button, currentState));
         return &m_modifierKeyItem;
 
     default:
         if (isCommand(desiredMask)) {
             item = mapCommandKey(keys, id, group, activeModifiers,
                                 currentState, desiredMask, isAutoRepeat);
+            LOG((CLOG_DEBUG1 "mapCommandKey()"));
         }
         else {
             item = mapCharacterKey(keys, id, group, activeModifiers,
                                 currentState, desiredMask, isAutoRepeat);
+            LOG((CLOG_DEBUG1 "mapCharacterKey()"));
         }
         break;
     }
