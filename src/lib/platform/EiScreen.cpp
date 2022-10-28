@@ -54,7 +54,11 @@ EiScreen::EiScreen(bool isPrimary, IEventQueue* events, bool usePortal) :
     m_ei_pointer(NULL),
     m_ei_keyboard(NULL),
     m_ei_abs(NULL),
-    m_isOnScreen(m_isPrimary)
+    m_isOnScreen(m_isPrimary),
+    m_x(0), m_y(0),
+    m_w(0), m_h(0),
+    m_xCursor(0),
+    m_yCursor(0)
 {
     if (isPrimary)
         m_ei = ei_new_receiver(NULL); // we receive from the display server
