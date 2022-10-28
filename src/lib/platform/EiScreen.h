@@ -98,6 +98,7 @@ protected:
     void removeDevice(struct ei_device* device);
 
 private:
+    void sendEvent(Event::Type, void* = nullptr);
     void onKeyEvent(struct ei_event *event);
     void onButtonEvent(struct ei_event *event);
     void onMotionEvent(struct ei_event *event);
