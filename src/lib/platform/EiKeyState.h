@@ -42,6 +42,7 @@ public:
     KeyModifierMask pollActiveModifiers() const override;
     int32_t pollActiveGroup() const override;
     void pollPressedKeys(KeyButtonSet& pressedKeys) const override;
+    KeyID mapKeyFromKeyval(uint32_t keyval) const;
 
 protected:
     // KeyState overrides

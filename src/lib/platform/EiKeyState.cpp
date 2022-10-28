@@ -262,3 +262,22 @@ EiKeyState::fakeKey(const Keystroke& keystroke)
         break;
     }
 }
+
+KeyID
+EiKeyState::mapKeyFromKeyval(uint32_t keyval) const
+{
+    auto state = xkb_state_new(m_xkb_keymap);
+    LOG((CLOG_DEBUG1 "mapKeyFromKeyval keyval=%d", keyval));
+
+    // FIXME: That might be a bit crude...?
+    xkb_keysym_t xkb_keysym = xkb_state_key_get_one_sym(state, keyval);
+    KeySym keysym = static_cast<KeySym>(xkb_keysym);
+    LOG((CLOG_DEBUG1 "mapped code=%d to keysym=0x%04x", keyval, keysym));
+
+    KeyID keyid = XWindowsUtil::mapKeySymToKeyID(keysym);
+    LOG((CLOG_DEBUG1 "mapped keysym=0x%04x to keyID=%d", keysym, keyid));
+
+    xkb_state_unref(state);
+
+    return keyid;
+}
