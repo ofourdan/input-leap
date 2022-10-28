@@ -30,7 +30,9 @@
 class EiClipboard;
 class EiKeyState;
 class PortalRemoteDesktop;
+#if HAVE_LIBPORTAL_INPUTCAPTURE
 class PortalInputCapture;
+#endif
 
 //! Implementation of IPlatformScreen for X11
 class EiScreen : public PlatformScreen {
@@ -128,5 +130,7 @@ private:
     mutable std::mutex mutex_;
 
     PortalRemoteDesktop *m_PortalRemoteDesktop;
+#if HAVE_LIBPORTAL_INPUTCAPTURE
     PortalInputCapture *m_PortalInputCapture;
+#endif
 };
