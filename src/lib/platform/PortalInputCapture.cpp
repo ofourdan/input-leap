@@ -39,6 +39,7 @@ PortalInputCapture::PortalInputCapture(EiScreen *screen, IEventQueue* events) :
     m_screen(screen),
     m_portal(xdp_portal_new()),
     m_events(events),
+    m_activation_id(0),
     m_session(nullptr),
     m_signals(_N_SIGNALS)
 {
@@ -235,9 +236,36 @@ PortalInputCapture::enable()
 }
 
 void
+PortalInputCapture::disable()
+{
+    if (m_enabled) {
+        LOG((CLOG_DEBUG "Disabling the InputCapture session"));
+        xdp_input_capture_session_disable(m_session);
+        m_enabled = false;
+    }
+}
+
+void
+PortalInputCapture::release()
+{
+    LOG((CLOG_DEBUG "Releasing InputCapture with activation id %d", m_activation_id));
+    xdp_input_capture_session_release(m_session, m_activation_id);
+}
+
+void
+PortalInputCapture::release(double x, double y)
+{
+    LOG((CLOG_DEBUG "Releasing InputCapture with activation id %d at (%.1f,%.1f)", m_activation_id, x, y));
+    xdp_input_capture_session_release_at(m_session, m_activation_id, x, y);
+}
+
+void
 PortalInputCapture::cb_Disabled(XdpInputCaptureSession *session)
 {
     LOG((CLOG_DEBUG "We are disabled!"));
+
+    if (!m_enabled)
+        return; // Nothing to do
 
     m_enabled = false;
 
@@ -256,13 +284,27 @@ PortalInputCapture::cb_Disabled(XdpInputCaptureSession *session)
 void
 PortalInputCapture::cb_Activated(XdpInputCaptureSession *session, GVariant *options)
 {
+    uint32_t activation_id = 0;
+
     LOG((CLOG_DEBUG "We are active!"));
+    if (!options || !g_variant_lookup (options, "activation_id", "u", &activation_id)) {
+        LOG((CLOG_WARN "Failed to get activation_id"));
+        return;
+    }
+    m_activation_id = activation_id;
 }
 
 void
 PortalInputCapture::cb_Deactivated(XdpInputCaptureSession *session, GVariant *options)
 {
+    uint32_t activation_id = 0;
+
     LOG((CLOG_DEBUG "We are deactivated!"));
+    if (!options || !g_variant_lookup (options, "activation_id", "u", &activation_id)) {
+        LOG((CLOG_WARN "Failed to get activation_id"));
+        return;
+    }
+    m_activation_id = activation_id;
 }
 
 void

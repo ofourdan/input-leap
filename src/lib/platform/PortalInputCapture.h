@@ -27,12 +27,17 @@
 
 #include <glib.h>
 #include <libportal/portal.h>
+#include <libportal/inputcapture.h>
 
 class PortalInputCapture {
 public:
     PortalInputCapture(EiScreen *screen, IEventQueue *events);
     ~PortalInputCapture();
     void enable();
+    void disable();
+    void release();
+    void release(double x, double y);
+
 
 private:
     void glibThread();
@@ -79,6 +84,7 @@ private:
     std::vector<guint> m_signals;
 
     bool m_enabled;
+    uint32_t m_activation_id;
 
     std::vector<XdpInputCapturePointerBarrier*> m_barriers;
 };
