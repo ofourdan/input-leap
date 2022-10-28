@@ -232,6 +232,7 @@ XWindowsScreen::disable()
 void
 XWindowsScreen::enter()
 {
+	LOG((CLOG_DEBUG "%s screen enter", m_isPrimary ? "primary" : "secondary"));
 	screensaver(false);
 
 	// release input context focus
@@ -289,6 +290,7 @@ XWindowsScreen::enter()
 bool
 XWindowsScreen::leave()
 {
+	LOG((CLOG_DEBUG "%s screen leave", m_isPrimary ? "primary" : "secondary"));
 	if (!m_isPrimary) {
 		// restore the previous keyboard auto-repeat state.  if the user
 		// changed the auto-repeat configuration while on the client then
@@ -440,6 +442,7 @@ XWindowsScreen::isPrimary() const
 void*
 XWindowsScreen::getEventTarget() const
 {
+	LOG((CLOG_DEBUG "%s: target=%p", __func__, this));
 	return const_cast<XWindowsScreen*>(this);
 }
 

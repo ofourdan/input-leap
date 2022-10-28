@@ -1074,6 +1074,7 @@ InputFilter::operator!=(const InputFilter& x) const
 void
 InputFilter::handleEvent(const Event& event, void*)
 {
+    LOG((CLOG_DEBUG1 "InputFilter::handleEvent"));
     // copy event and adjust target
     Event myEvent(event.getType(), this, event.getData(),
                                 event.getFlags() | Event::kDontFreeData |
@@ -1084,10 +1085,11 @@ InputFilter::handleEvent(const Event& event, void*)
                              rule != m_ruleList.end(); ++rule) {
         if (rule->handleEvent(myEvent)) {
             // handled
+            LOG((CLOG_DEBUG1 "InputFilter::handleEvent: handled"));
             return;
         }
     }
-
+    LOG((CLOG_DEBUG1 "InputFilter::handleEvent: pass through to %p with %p", this, m_events));
     // not handled so pass through
     m_events->addEvent(myEvent);
 }

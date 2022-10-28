@@ -102,6 +102,7 @@ EiEventQueueBuffer::waitForEvent(double timeout_in_ms)
         }
     }
     Thread::testCancel();
+    LOG((CLOG_DEBUG "%s", __func__));
 }
 
 IEventQueueBuffer::Type
@@ -129,7 +130,7 @@ EiEventQueueBuffer::getEvent(Event& event, uint32_t& dataID)
         dataID = pair.second;
         return kUser;
     }
-
+    LOG((CLOG_DEBUG "%s", __func__));
     event = Event(Event::kSystem, m_events->getSystemTarget(), nullptr);
 
     return kSystem;
@@ -140,7 +141,7 @@ EiEventQueueBuffer::addEvent(uint32_t dataID)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     m_queue.push({false, dataID});
-
+    LOG((CLOG_DEBUG "%s: dataID=%i", __func__, dataID));
     // tickle the pipe so our read thread wakes up
     write(m_pipe_w, "!", 1);
 

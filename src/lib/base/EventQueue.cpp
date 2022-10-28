@@ -207,6 +207,7 @@ EventQueue::getEvent(Event& event, double timeout)
 {
     Stopwatch timer(true);
 retry:
+    LOG((CLOG_DEBUG "%s", __func__));
     // before handling any events make sure we don't need to shutdown
     if (parent_requests_shutdown()) {
         event = Event(Event::kQuit);
@@ -232,6 +233,7 @@ retry:
         if (timeout < 0.0 || (timerTimeout >= 0.0 && timerTimeout < timeLeft)) {
             timeLeft = timerTimeout;
         }
+        LOG((CLOG_DEBUG "%s: waitForEvent()", __func__));
 
         // wait for an event
         m_buffer->waitForEvent(timeLeft);
@@ -255,6 +257,7 @@ retry:
 
     case IEventQueueBuffer::kUser:
         {
+            LOG((CLOG_DEBUG "%s: removeEvent()", __func__));
             std::lock_guard<std::mutex> lock(mutex_);
             event = removeEvent(dataID);
             return true;
@@ -300,9 +303,11 @@ EventQueue::addEvent(const Event& event)
         Event::deleteData(event);
     }
     else if (!is_ready_) {
+        LOG((CLOG_DEBUG "%s: push", __func__));
         m_pending.push(event);
     }
     else {
+        LOG((CLOG_DEBUG "%s: to buffer", __func__));
         addEventToBuffer(event);
     }
 }
@@ -314,10 +319,11 @@ EventQueue::addEventToBuffer(const Event& event)
 
     // store the event's data locally
     std::uint32_t eventID = saveEvent(event);
-
+    LOG((CLOG_DEBUG "%s: eventID=%i target=%p buffer=%p", __func__, eventID, event.getTarget(), m_buffer));
     // add it
     if (!m_buffer->addEvent(eventID)) {
         // failed to send event
+        LOG((CLOG_DEBUG "%s: Failed to send event %i!", __func__, eventID));
         removeEvent(eventID);
         Event::deleteData(event);
     }
@@ -468,6 +474,7 @@ std::uint32_t EventQueue::saveEvent(const Event& event)
 
 Event EventQueue::removeEvent(std::uint32_t eventID)
 {
+    LOG((CLOG_DEBUG "%s: eventID=%i", __func__, eventID));
     // look up id
     EventTable::iterator index = m_events.find(eventID);
     if (index == m_events.end()) {

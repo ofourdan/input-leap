@@ -124,6 +124,7 @@ TCPSocket::close()
 void*
 TCPSocket::getEventTarget() const
 {
+    LOG((CLOG_DEBUG "%s: target=%p", __func__, this));
     return const_cast<void*>(static_cast<const void*>(this));
 }
 
@@ -371,7 +372,7 @@ TCPSocket::doWrite()
     bufferSize = m_outputBuffer.getSize();
     const void* buffer = m_outputBuffer.peek(bufferSize);
     bytesWrote = static_cast<std::uint32_t>(ARCH->writeSocket(m_socket, buffer, bufferSize));
-
+    LOG((CLOG_DEBUG "%s: wrote %i bytes", __func__, bytesWrote));
     if (bytesWrote > 0) {
         discardWrittenData(bytesWrote);
         return kNew;
@@ -444,6 +445,7 @@ TCPSocket::sendConnectionFailedEvent(const char* msg)
 void
 TCPSocket::sendEvent(Event::Type type)
 {
+    LOG((CLOG_DEBUG "%s: type %i", __func__, type));
     m_events->addEvent(Event(type, getEventTarget(), nullptr));
 }
 

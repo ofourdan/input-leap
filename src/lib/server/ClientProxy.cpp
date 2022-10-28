@@ -57,5 +57,6 @@ ClientProxy::getStream() const
 void*
 ClientProxy::getEventTarget() const
 {
+    LOG((CLOG_DEBUG "%s: target=%p", __func__, this));
     return static_cast<IScreen*>(const_cast<ClientProxy*>(this));
 }

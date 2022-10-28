@@ -220,6 +220,7 @@ Client::getServerAddress() const
 void*
 Client::getEventTarget() const
 {
+    LOG((CLOG_DEBUG "%s: target=%p", __func__, this));
     return m_screen->getEventTarget();
 }
 

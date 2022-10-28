@@ -259,6 +259,7 @@ void ClientProxy1_0::getShape(std::int32_t& x, std::int32_t& y, std::int32_t& w,
     y = m_info.m_y;
     w = m_info.m_w;
     h = m_info.m_h;
+    LOG((CLOG_DEBUG1 "got info shape=%d,%d %dx%d", x, y, w, h));
 }
 
 void ClientProxy1_0::getCursorPos(std::int32_t& x, std::int32_t& y) const

@@ -1305,6 +1305,7 @@ Server::handleKeyRepeatEvent(const Event& event, void*)
 void
 Server::handleButtonDownEvent(const Event& event, void*)
 {
+	LOG((CLOG_DEBUG1 "handleButtonDownEvent"));
 	IPlatformScreen::ButtonInfo* info =
 		static_cast<IPlatformScreen::ButtonInfo*>(event.getData());
 	onMouseDown(info->m_button);
@@ -1313,6 +1314,7 @@ Server::handleButtonDownEvent(const Event& event, void*)
 void
 Server::handleButtonUpEvent(const Event& event, void*)
 {
+	LOG((CLOG_DEBUG1 "handleButtonDownEvent"));
 	IPlatformScreen::ButtonInfo* info =
 		static_cast<IPlatformScreen::ButtonInfo*>(event.getData());
 	onMouseUp(info->m_button);
@@ -1757,7 +1759,7 @@ bool Server::onMouseMovePrimary(std::int32_t x, std::int32_t y)
 	std::int32_t ax, ay, aw, ah;
 	m_active->getShape(ax, ay, aw, ah);
 	std::int32_t zoneSize = getJumpZoneSize(m_active);
-
+        LOG((CLOG_DEBUG4 "  shape (%d,%d) [%dx%d] zone size %d", ax, ay, aw, ah, zoneSize));
 	// clamp position to screen
 	std::int32_t xc = x, yc = y;
 	if (xc < ax + zoneSize) {
@@ -1812,7 +1814,7 @@ bool Server::onMouseMovePrimary(std::int32_t x, std::int32_t y)
 
 		// get jump destination
 		BaseClientProxy* newScreen = mapToNeighbor(m_active, dir, x, y);
-
+                LOG((CLOG_DEBUG4 "mapToNeighbor at %d,%d", x, y));
 		// should we switch or not?
 		if (isSwitchOkay(newScreen, dir, x, y, xc, yc)) {
 			if (m_args.m_enableDragDrop
