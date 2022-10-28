@@ -160,8 +160,9 @@ EiScreen::reconfigure(uint32_t)
 void
 EiScreen::warpCursor(int32_t x, int32_t y)
 {
-    // FIXME
-    assert(!"Not Implemented");
+    LOG((CLOG_DEBUG "warpCursor () = (%i,%i)", x, y));
+    m_xCursor = x;
+    m_yCursor = y;
 }
 
 uint32_t
