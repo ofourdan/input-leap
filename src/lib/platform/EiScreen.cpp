@@ -247,7 +247,7 @@ EiScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
         return;
 
     ei_device_pointer_motion(m_ei_pointer, dx, dy);
-    ei_device_frame(m_ei_abs, ei_now(m_ei));
+    ei_device_frame(m_ei_pointer, ei_now(m_ei));
 }
 
 void
@@ -261,7 +261,7 @@ void
 EiScreen::fakeKey(uint32_t keycode, bool is_down) const
 {
     ei_device_keyboard_key(m_ei_keyboard, keycode, is_down);
-    ei_device_frame(m_ei_abs, ei_now(m_ei));
+    ei_device_frame(m_ei_keyboard, ei_now(m_ei));
 }
 
 void
