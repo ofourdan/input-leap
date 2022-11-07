@@ -50,7 +50,7 @@ protected:
     void fakeKey(const Keystroke& keystroke) override;
 
 private:
-    uint32_t convertModMask(uint32_t xkb_mask);
+    uint32_t convertModMask(uint32_t xkb_mask) const;
     void assignGeneratedModifiers(uint32_t keycode, inputleap::KeyMap::KeyItem &item);
 
     EiScreen *m_impl;

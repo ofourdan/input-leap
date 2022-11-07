@@ -117,7 +117,7 @@ EiKeyState::pollPressedKeys(KeyButtonSet& pressedKeys) const
 }
 
 uint32_t
-EiKeyState::convertModMask(uint32_t xkb_mask)
+EiKeyState::convertModMask(uint32_t xkb_mask) const
 {
     uint32_t barrier_mask = 0;
 
