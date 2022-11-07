@@ -232,18 +232,28 @@ EiKeyState::getKeyMap(inputleap::KeyMap& keyMap)
 
                 uint32_t mods_required = 0;
                 for (auto m = 0; m < nmasks; m++) {
-                    mods_required = masks[m];
+                    mods_required |= masks[m];
                     if (keycode < 13) {
-                        printf("..... %d: %#x (%s) modmask: %#06x (sensitive: %#06x)\n",
+                        printf("..... %d: %#x (%s) level=%d modmask: %#06x (sensitive: %#06x)\n",
                                keycode, keysym, keysym_name,
+                               level,
                                mods_required,
                                mods_sensitive);
                     }
-
                 }
+
                 item.m_required = convertModMask(mods_required);
 
                 assignGeneratedModifiers(keycode, item);
+
+                // add capslock version of key is sensitive to capslock
+                if (item.m_sensitive & KeyModifierShift && item.m_sensitive & KeyModifierCapsLock) {
+                    item.m_required &= ~KeyModifierShift;
+                    item.m_required |=  KeyModifierCapsLock;
+                    keyMap.addKeyEntry(item);
+                    item.m_required |=  KeyModifierShift;
+                    item.m_required &= ~KeyModifierCapsLock;
+                }
 
                 keyMap.addKeyEntry(item);
             }
