@@ -41,6 +41,8 @@ EiKeyState::EiKeyState(EiScreen* impl, IEventQueue* events) :
     // one during initial startup - even before we know what our actual keymap is.
     // Once we get the actual keymap from EIS, we swap it out so hopefully that's enough.
     initDefaultKeymap();
+
+    m_xkb_state = xkb_state_new(m_xkb_keymap);
 }
 
 void
@@ -84,6 +86,7 @@ EiKeyState::~EiKeyState()
 {
     xkb_context_unref(m_xkb);
     xkb_keymap_unref(m_xkb_keymap);
+    xkb_state_unref(m_xkb_state);
 }
 
 bool
@@ -266,18 +269,26 @@ EiKeyState::fakeKey(const Keystroke& keystroke)
 KeyID
 EiKeyState::mapKeyFromKeyval(uint32_t keyval) const
 {
-    auto state = xkb_state_new(m_xkb_keymap);
     LOG((CLOG_DEBUG1 "mapKeyFromKeyval keyval=%d", keyval));
 
     // FIXME: That might be a bit crude...?
-    xkb_keysym_t xkb_keysym = xkb_state_key_get_one_sym(state, keyval);
+    xkb_keysym_t xkb_keysym = xkb_state_key_get_one_sym(m_xkb_state, keyval);
     KeySym keysym = static_cast<KeySym>(xkb_keysym);
     LOG((CLOG_DEBUG1 "mapped code=%d to keysym=0x%04x", keyval, keysym));
 
     KeyID keyid = XWindowsUtil::mapKeySymToKeyID(keysym);
     LOG((CLOG_DEBUG1 "mapped keysym=0x%04x to keyID=%d", keysym, keyid));
 
-    xkb_state_unref(state);
-
     return keyid;
+}
+
+void
+EiKeyState::updateXkbState(uint32_t keyval, bool isPressed)
+{
+    LOG((CLOG_DEBUG1 "updateXkbState keyval=%d pressed=%i", keyval, isPressed));
+
+    if (isPressed)
+      xkb_state_update_key(m_xkb_state, keyval, XKB_KEY_DOWN);
+    else
+      xkb_state_update_key(m_xkb_state, keyval, XKB_KEY_UP);
 }

@@ -43,6 +43,7 @@ public:
     int32_t pollActiveGroup() const override;
     void pollPressedKeys(KeyButtonSet& pressedKeys) const override;
     KeyID mapKeyFromKeyval(uint32_t keyval) const;
+    void updateXkbState(uint32_t keyval, bool isPressed);
 
 protected:
     // KeyState overrides
@@ -57,4 +58,5 @@ private:
 
     struct xkb_context *m_xkb;
     struct xkb_keymap  *m_xkb_keymap;
+    struct xkb_state   *m_xkb_state;
 };

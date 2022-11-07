@@ -262,6 +262,7 @@ void
 EiScreen::fakeKey(uint32_t keycode, bool is_down) const
 {
     LOG((CLOG_DEBUG1 "fakeKey: keycode=%d %s", keycode, is_down ? "press" : "release"));
+    m_keyState->updateXkbState(keycode, is_down);
     ei_device_keyboard_key(m_ei_keyboard, keycode, is_down);
     ei_device_frame(m_ei_keyboard, ei_now(m_ei));
 }
