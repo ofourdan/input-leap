@@ -99,16 +99,21 @@ EiKeyState::fakeCtrlAltDel()
 KeyModifierMask
 EiKeyState::pollActiveModifiers() const
 {
-    // FIXME
-    return 0;
+    uint32_t xkb_mask = xkb_state_serialize_mods(m_xkb_state, XKB_STATE_MODS_EFFECTIVE);
+    KeyModifierMask mod_mask = convertModMask(xkb_mask);
+    LOG((CLOG_DEBUG1 "pollActiveModifiers mask=0x%x", mod_mask));
+
+    return mod_mask;
 }
 
 int32_t
 EiKeyState::pollActiveGroup() const
 {
     printf("::::::::: %s:%d:%s() - \n", __FILE__, __LINE__, __func__);
-    // FIXME
-    return 0;
+    uint32_t group = xkb_state_serialize_layout(m_xkb_state, XKB_STATE_LAYOUT_EFFECTIVE);
+    LOG((CLOG_DEBUG1 "pollActiveGroup group=%d", group));
+
+    return group;
 }
 
 void
