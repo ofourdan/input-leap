@@ -498,12 +498,15 @@ void
 EiScreen::onKeyEvent(struct ei_event *event)
 {
     uint32_t keycode = ei_event_keyboard_get_key (event);
+    uint32_t keyval = keycode + 8;
     bool pressed = ei_event_keyboard_get_key_is_press (event);
-    KeyID keyid = m_keyState->mapKeyFromKeyval(keycode + 8);
-    KeyButton keybutton = static_cast<KeyButton>(keycode + 8);
-    KeyModifierMask mask = 0; // FIXME
+    KeyID keyid = m_keyState->mapKeyFromKeyval(keyval);
+    KeyButton keybutton = static_cast<KeyButton>(keyval);
 
-    LOG((CLOG_DEBUG1 "event: Key %s keycode=%d keyid=%d", pressed ? "press" : "release", keycode, keyid));
+    m_keyState->updateXkbState(keyval, pressed);
+    KeyModifierMask mask = m_keyState->pollActiveModifiers();
+
+    LOG((CLOG_DEBUG1 "event: Key %s keycode=%d keyid=%d mask=0x%x", pressed ? "press" : "release", keycode, keyid, mask));
 
     if (keyid != kKeyNone) {
         m_keyState->sendKeyEvent(getEventTarget(),
@@ -524,9 +527,9 @@ EiScreen::onButtonEvent(struct ei_event *event)
 
     ButtonID button = mapButtonFromEvdev(event);
     bool pressed = ei_event_pointer_get_button_is_press(event);
-    KeyModifierMask mask = 0; // FIXME
+    KeyModifierMask mask = m_keyState->pollActiveModifiers();
 
-    LOG((CLOG_DEBUG1 "event: Button %s button=%d", pressed ? "press" : "release", button));
+    LOG((CLOG_DEBUG1 "event: Button %s button=%d mask=0x%x", pressed ? "press" : "release", button, mask));
 
     if (button == kButtonNone) {
         LOG((CLOG_DEBUG "onButtonEvent: button not recognized"));
