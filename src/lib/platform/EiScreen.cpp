@@ -254,8 +254,15 @@ EiScreen::fakeMouseRelativeMove(int32_t dx, int32_t dy) const
 void
 EiScreen::fakeMouseWheel(int32_t xDelta, int32_t yDelta) const
 {
-    printf("::::::::: %s:%d:%s() - \n", __FILE__, __LINE__, __func__);
-    // FIXME
+    LOG((CLOG_DEBUG1 "fakeMouseWheel: (%d,%d)", xDelta, yDelta));
+    if (!m_ei_pointer)
+        return;
+
+    // libEI and InputLeap seem to use opposite directions, so we have
+    // to send EI the opposite of the value received if we want to remain
+    // compatible with other platforms (including X11).
+    ei_device_pointer_scroll_discrete(m_ei_pointer, -xDelta, -yDelta);
+    ei_device_frame(m_ei_pointer, ei_now(m_ei));
 }
 
 void
@@ -545,6 +552,42 @@ EiScreen::onButtonEvent(struct ei_event *event)
 }
 
 void
+EiScreen::onPointerScrollEvent(struct ei_event *event)
+{
+    LOG((CLOG_DEBUG "onPointerScrollEvent"));
+    assert(m_isPrimary);
+
+    double dx = ei_event_pointer_get_scroll_x(event);
+    double dy = ei_event_pointer_get_scroll_y(event);
+
+    LOG((CLOG_DEBUG1 "event: Scroll (%.1f,%.1f)", dx, dy));
+
+    // libEI and InputLeap seem to use opposite directions, so we have
+    // to send the opposite of the value reported by EI if we want to
+    // remain compatible with other platforms (including X11).
+    sendEvent(m_events->forIPrimaryScreen().wheel(),
+              WheelInfo::alloc(-dx, -dy));
+}
+
+void
+EiScreen::onPointerScrollDiscreteEvent(struct ei_event *event)
+{
+    LOG((CLOG_DEBUG "onPointerScrollEvent"));
+    assert(m_isPrimary);
+
+    double dx = ei_event_pointer_get_scroll_discrete_x(event);
+    double dy = ei_event_pointer_get_scroll_discrete_y(event);
+
+    LOG((CLOG_DEBUG1 "event: Scroll (%.1f,%.1f)", dx, dy));
+
+    // libEI and InputLeap seem to use opposite directions, so we have
+    // to send the opposite of the value reported by EI if we want to
+    // remain compatible with other platforms (including X11).
+    sendEvent(m_events->forIPrimaryScreen().wheel(),
+              WheelInfo::alloc( -dx * 120, -dy * 120));
+}
+
+void
 EiScreen::onMotionEvent(struct ei_event *event)
 {
     LOG((CLOG_DEBUG "onMotionEvent"));
@@ -665,10 +708,17 @@ EiScreen::handleSystemEvent(const Event& sysevent, void* data)
                 onAbsMotionEvent(event);
                 break;
             case EI_EVENT_TOUCH_UP:
+                break;
             case EI_EVENT_TOUCH_MOTION:
+                break;
             case EI_EVENT_TOUCH_DOWN:
+                break;
             case EI_EVENT_POINTER_SCROLL:
+                onPointerScrollEvent(event);
+                break;
             case EI_EVENT_POINTER_SCROLL_DISCRETE:
+                onPointerScrollDiscreteEvent(event);
+                break;
             case EI_EVENT_POINTER_SCROLL_STOP:
             case EI_EVENT_POINTER_SCROLL_CANCEL:
                 break;
