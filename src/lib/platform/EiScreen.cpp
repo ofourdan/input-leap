@@ -146,10 +146,8 @@ void
 EiScreen::getCursorPos(int32_t& x, int32_t& y) const
 {
     LOG((CLOG_DEBUG "%s: (m_xCursor,m_yCursor)=(%i,%i)", __func__, m_xCursor, m_yCursor));
-    // We cannot get the cursor position on EI, so we
-    // always return the center of the screen
-    x = m_x + m_w/2;
-    y = m_y + m_y/2;
+    x = m_xCursor;
+    y = m_yCursor;
 }
 
 void
@@ -302,7 +300,7 @@ EiScreen::enter()
     }
 #if HAVE_LIBPORTAL_INPUTCAPTURE
     else {
-        LOG((CLOG_DEBUG "Releasing input capture"));
+        LOG((CLOG_DEBUG "Releasing input capture at (m_xCursor,m_yCursor) = (%i,%i)", m_xCursor, m_yCursor));
         m_PortalInputCapture->release(m_xCursor, m_yCursor);
     }
 #endif
@@ -595,17 +593,19 @@ EiScreen::onMotionEvent(struct ei_event *event)
 
     double dx = ei_event_pointer_get_dx(event),
            dy = ei_event_pointer_get_dy(event);
-    LOG((CLOG_DEBUG "onMotionEvent (dx,dy)=(%.2f,%.2f) + (m_xCursor,m_yCursor)=(%i,%i)", dx, dy, m_xCursor, m_yCursor));
-    m_xCursor += dx;
-    m_yCursor += dy;
-    LOG((CLOG_DEBUG "onMotionEvent (m_xCursor,m_yCursor) = (%i,%i)", m_xCursor, m_yCursor));
+
     // motion on primary screen
     if (m_isOnScreen) {
+         m_xCursor += dx;
+         m_yCursor += dy;
+         LOG((CLOG_DEBUG "onMotionEvent on primary at (m_xCursor,m_yCursor)=(%i,%i)", m_xCursor, m_yCursor));
+
          sendEvent(m_events->forIPrimaryScreen().motionOnPrimary(),
                    MotionInfo::alloc(m_xCursor, m_yCursor));
     } else {
         // motion on secondary screen
         auto t = m_events->forIPrimaryScreen().motionOnSecondary();
+        LOG((CLOG_DEBUG "onMotionEvent on secondary at (dx,dy)=(%.2f,%.2f)", dx, dy));
         sendEvent(t, MotionInfo::alloc(dx, dy));
     }
 }
