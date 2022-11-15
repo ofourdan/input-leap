@@ -602,6 +602,9 @@ EiScreen::onMotionEvent(struct ei_event *event)
 
          sendEvent(m_events->forIPrimaryScreen().motionOnPrimary(),
                    MotionInfo::alloc(m_xCursor, m_yCursor));
+
+         if (m_PortalInputCapture->isActive())
+            m_PortalInputCapture->release();
     } else {
         // motion on secondary screen
         auto t = m_events->forIPrimaryScreen().motionOnSecondary();
