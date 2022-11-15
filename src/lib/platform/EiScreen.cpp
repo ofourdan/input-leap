@@ -402,6 +402,8 @@ EiScreen::updateShape()
     }
 
     LOG((CLOG_NOTE "Logical output size: %dx%d@%d.%d", m_w, m_h, m_x, m_y));
+    m_xCursor = m_x + m_w/2;
+    m_yCursor = m_y + m_h/2;
 }
 
 void
