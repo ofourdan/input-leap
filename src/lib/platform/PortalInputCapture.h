@@ -37,7 +37,7 @@ public:
     void disable();
     void release();
     void release(double x, double y);
-
+    bool isActive();
 
 private:
     void glibThread();
@@ -84,6 +84,7 @@ private:
     std::vector<guint> m_signals;
 
     bool m_enabled;
+    bool m_active;
     uint32_t m_activation_id;
 
     std::vector<XdpInputCapturePointerBarrier*> m_barriers;

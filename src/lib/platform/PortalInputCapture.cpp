@@ -40,6 +40,7 @@ PortalInputCapture::PortalInputCapture(EiScreen *screen, IEventQueue* events) :
     m_portal(xdp_portal_new()),
     m_events(events),
     m_activation_id(0),
+    m_active(false),
     m_session(nullptr),
     m_signals(_N_SIGNALS)
 {
@@ -250,6 +251,7 @@ PortalInputCapture::release()
 {
     LOG((CLOG_DEBUG "Releasing InputCapture with activation id %d", m_activation_id));
     xdp_input_capture_session_release(m_session, m_activation_id);
+    m_active = false;
 }
 
 void
@@ -257,6 +259,13 @@ PortalInputCapture::release(double x, double y)
 {
     LOG((CLOG_DEBUG "Releasing InputCapture with activation id %d at (%.1f,%.1f)", m_activation_id, x, y));
     xdp_input_capture_session_release_at(m_session, m_activation_id, x, y);
+    m_active = false;
+}
+
+bool
+PortalInputCapture::isActive()
+{
+    return m_active;
 }
 
 void
@@ -268,6 +277,7 @@ PortalInputCapture::cb_Disabled(XdpInputCaptureSession *session)
         return; // Nothing to do
 
     m_enabled = false;
+    m_active = false;
 
     // FIXME: need some better heuristics here of when we want to enable again
     // But we don't know *why* we got disabled (and it's doubtfull we ever will), so
@@ -297,12 +307,15 @@ PortalInputCapture::cb_Activated(XdpInputCaptureSession *session, uint32_t activ
         LOG((CLOG_WARN "Activation has no options!"));
     }
     m_activation_id = activation_id;
+    m_active = true;
 }
 
 void
 PortalInputCapture::cb_Deactivated(XdpInputCaptureSession *session, uint32_t activation_id, GVariant *options)
 {
     LOG((CLOG_DEBUG "We are deactivated! activation id=%i", activation_id));
+
+    m_active = false;
 }
 
 void
