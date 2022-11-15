@@ -48,8 +48,8 @@ private:
     void cb_SessionStarted(GObject *object, GAsyncResult *res);
     void cb_SessionClosed(XdpSession *session);
     void cb_Disabled(XdpInputCaptureSession *session);
-    void cb_Activated(XdpInputCaptureSession *session, GVariant *options);
-    void cb_Deactivated(XdpInputCaptureSession *session, GVariant *options);
+    void cb_Activated(XdpInputCaptureSession *session, uint32_t activation_id, GVariant *options);
+    void cb_Deactivated(XdpInputCaptureSession *session, uint32_t activation_id, GVariant *options);
     void cb_ZonesChanged(XdpInputCaptureSession *session, GVariant *options);
 
     /// g_signal_connect callback wrapper
@@ -59,11 +59,11 @@ private:
     static void cb_DisabledCB(XdpInputCaptureSession *session, gpointer data) {
         reinterpret_cast<PortalInputCapture*>(data)->cb_Disabled(session);
     } ;
-    static void cb_ActivatedCB(XdpInputCaptureSession *session, GVariant *options, gpointer data) {
-        reinterpret_cast<PortalInputCapture*>(data)->cb_Activated(session, options);
+    static void cb_ActivatedCB(XdpInputCaptureSession *session, uint32_t activation_id, GVariant *options, gpointer data) {
+        reinterpret_cast<PortalInputCapture*>(data)->cb_Activated(session, activation_id, options);
     } ;
-    static void cb_DeactivatedCB(XdpInputCaptureSession *session, GVariant *options, gpointer data) {
-        reinterpret_cast<PortalInputCapture*>(data)->cb_Deactivated(session, options);
+    static void cb_DeactivatedCB(XdpInputCaptureSession *session, uint32_t activation_id, GVariant *options, gpointer data) {
+        reinterpret_cast<PortalInputCapture*>(data)->cb_Deactivated(session, activation_id, options);
     } ;
     static void cb_ZonesChangedCB(XdpInputCaptureSession *session, GVariant *options, gpointer data) {
         reinterpret_cast<PortalInputCapture*>(data)->cb_ZonesChanged(session, options);
