@@ -596,8 +596,6 @@ EiScreen::onMotionEvent(struct ei_event *event)
 
     // motion on primary screen
     if (m_isOnScreen) {
-         m_xCursor += dx;
-         m_yCursor += dy;
          LOG((CLOG_DEBUG "onMotionEvent on primary at (m_xCursor,m_yCursor)=(%i,%i)", m_xCursor, m_yCursor));
 
          sendEvent(m_events->forIPrimaryScreen().motionOnPrimary(),
