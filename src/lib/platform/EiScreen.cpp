@@ -205,7 +205,7 @@ void
 EiScreen::getCursorCenter(int32_t& x, int32_t& y) const
 {
     x = m_x + m_w/2;
-    y = m_y + m_y/2;
+    y = m_y + m_h/2;
 }
 
 void
