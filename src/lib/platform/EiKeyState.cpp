@@ -67,7 +67,7 @@ EiKeyState::init(int fd, size_t len)
         return;
     }
 
-    auto keymap = xkb_keymap_new_from_buffer(m_xkb, buffer.get(), len,
+    auto keymap = xkb_keymap_new_from_buffer(m_xkb, buffer.get(), len - 1,
                                              XKB_KEYMAP_FORMAT_TEXT_V1,
                                              XKB_KEYMAP_COMPILE_NO_FLAGS);
     if (!keymap) {
