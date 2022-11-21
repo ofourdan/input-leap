@@ -114,29 +114,6 @@ PortalRemoteDesktop::cb_SessionStarted(GObject *object, GAsyncResult *res)
         g_main_loop_quit(m_gmainloop);
         m_events->addEvent(Event(Event::kQuit));
     }
-}
-
-void
-PortalRemoteDesktop::cb_initRemoteDesktopSession(GObject *object, GAsyncResult *res)
-{
-    LOG((CLOG_DEBUG "Session ready"));
-    g_autoptr(GError) error = NULL;
-
-    auto session = xdp_portal_create_remote_desktop_session_finish(XDP_PORTAL(object), res, &error);
-    if (!session) {
-        LOG((CLOG_ERR "Failed to initialize RemoteDesktop session, quitting: %s", error->message));
-        g_main_loop_quit(m_gmainloop);
-        m_events->addEvent(Event(Event::kQuit));
-        return;
-    }
-
-    m_session = session;
-
-    // FIXME: the lambda trick doesn't work here for unknown reasons, we need
-    // the static function
-    m_sessionSignalID = g_signal_connect(G_OBJECT(session), "closed",
-                                         G_CALLBACK(cb_SessionClosedCB),
-                                         this);
 
     // ConnectToEIS requires version 2 of the xdg-desktop-portal (and the same
     // version in the impl.portal), i.e. you'll need an updated compositor on
@@ -166,6 +143,29 @@ PortalRemoteDesktop::cb_initRemoteDesktopSession(GObject *object, GAsyncResult *
     m_events->addEvent(Event(m_events->forEiScreen().connectedToEIS(),
                              m_screen->getEventTarget(),
                              new int(fd)));
+}
+
+void
+PortalRemoteDesktop::cb_initRemoteDesktopSession(GObject *object, GAsyncResult *res)
+{
+    LOG((CLOG_DEBUG "Session ready"));
+    g_autoptr(GError) error = NULL;
+
+    auto session = xdp_portal_create_remote_desktop_session_finish(XDP_PORTAL(object), res, &error);
+    if (!session) {
+        LOG((CLOG_ERR "Failed to initialize RemoteDesktop session, quitting: %s", error->message));
+        g_main_loop_quit(m_gmainloop);
+        m_events->addEvent(Event(Event::kQuit));
+        return;
+    }
+
+    m_session = session;
+
+    // FIXME: the lambda trick doesn't work here for unknown reasons, we need
+    // the static function
+    m_sessionSignalID = g_signal_connect(G_OBJECT(session), "closed",
+                                         G_CALLBACK(cb_SessionClosedCB),
+                                         this);
 
     xdp_session_start(session,
                       nullptr, // parent
