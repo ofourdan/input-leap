@@ -34,8 +34,8 @@
 class EventQueueTimer { };
 
 EiEventQueueBuffer::EiEventQueueBuffer(EiScreen *screen, struct ei *ei, IEventQueue* events) :
-    m_events(events),
-    m_ei(ei_ref(ei))
+    m_ei(ei_ref(ei)),
+    m_events(events)
 {
     // We need a pipe to signal ourselves when addEvent() is called
     int pipefd[2];
