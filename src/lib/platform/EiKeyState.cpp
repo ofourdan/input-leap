@@ -140,7 +140,7 @@ EiKeyState::convertModMask(uint32_t xkb_mask) const
 {
     uint32_t barrier_mask = 0;
 
-    for (auto xkbmod = 0; xkbmod < xkb_keymap_num_mods(m_xkb_keymap); xkbmod++) {
+    for (xkb_mod_index_t xkbmod = 0; xkbmod < xkb_keymap_num_mods(m_xkb_keymap); xkbmod++) {
         if ((xkb_mask & (1 << xkbmod)) == 0)
             continue;
 
@@ -169,7 +169,7 @@ EiKeyState::assignGeneratedModifiers(uint32_t keycode, inputleap::KeyMap::KeyIte
     enum xkb_state_component changed = xkb_state_update_key(state, keycode, XKB_KEY_DOWN);
 
     if (changed) {
-        for (auto m = 0; m < xkb_keymap_num_mods(m_xkb_keymap); m++) {
+        for (xkb_mod_index_t m = 0; m < xkb_keymap_num_mods(m_xkb_keymap); m++) {
             if (xkb_state_mod_index_is_active(state, m, XKB_STATE_MODS_LOCKED))
                 item.m_lock = true;
 
@@ -242,7 +242,7 @@ EiKeyState::getKeyMap(inputleap::KeyMap& keyMap)
                 item.m_sensitive = convertModMask(mods_sensitive);
 
                 uint32_t mods_required = 0;
-                for (auto m = 0; m < nmasks; m++) {
+                for (size_t m = 0; m < nmasks; m++) {
                     mods_required |= masks[m];
                     if (keycode < 13) {
                         printf("..... %d: %#x (%s) level=%d modmask: %#06x (sensitive: %#06x)\n",
